@@ -1,16 +1,17 @@
 <?php
 	include_once("CacheClass.php");
-		$cacheOBJ = new CacheClass();
-		$cacheOBJ->setCacheServiceAdapter(new FileSystemAdapter());
+	
+	$cacheOBJ = new CacheClass();
+	$cacheOBJ->setCacheServiceAdapter(new FileSystemAdapter());
 
-		// $cacheOBJ->setData(2, 'Shubham Sahu');
+	$cacheOBJ->setData(2, 'Shubham Sahu');
 
-		// $cacheOBJ->getData(3);
+	// $cacheOBJ->getData(3);
 
-		// $cacheOBJ->deleteData(1);
+	// $cacheOBJ->deleteData(1);
 
-		// $cacheOBJ->exportCache();
+	// $cacheOBJ->exportCache();
 
-		// $cacheOBJ->importCache('');
+	// $cacheOBJ->importCache('');
 
 ?>

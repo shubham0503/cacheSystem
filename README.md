@@ -1,7 +1,5 @@
-# Cache System
-Cache system for different type of caching with Adapter Design Pattern
-
-**Basic Understanding of Adapter Design Pattern
-**Built with - php 7+
-
 -- Author : Shubham Sahu
+
+**Adapter Design Pattern for Different Type of Caching Systems
+**Built with - php 7+
+**Use config.php to change the cachefilename and cachefilesize

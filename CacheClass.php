@@ -32,50 +32,57 @@
 	}
 
 	class FileSystemClass{
+		public $configs;
+
 		function __construct(){
-			$file = 'cgcache.txt';
-			if(!is_file($file)){  
-			    $myfile = fopen("cgcache.txt", "w");
+ 			$this->configs = include('config.php');
+
+			if(!is_file($this->configs['cacheFileName'])){  
+			    $myfile = fopen($this->configs['cacheFileName'], "w");
 			    fclose($myfile);
 			}
 		}
 
 		function setData($key, $value){			
-			filesize('cgcache.txt') == 0 ? file_put_contents('cgcache.txt', json_encode(array())) : '';
-			$fileData = json_decode(file_get_contents("cgcache.txt"), true);
+			filesize($this->configs['cacheFileName']) == 0 ? file_put_contents($this->configs['cacheFileName'], json_encode(array())) : '';
+			$fileData = json_decode(file_get_contents($this->configs['cacheFileName']), true);
+			$keyP = array_search($key, array_column($fileData, 'key'));
+
+
 			$keyP = array_search($key, array_column($fileData, 'key'));
 			if(!empty($keyP) || $keyP === 0){
 				$fileData[$keyP]['accessTime'] = time();
 				$fileData[$keyP]['value'] = $value;
-				file_put_contents('cgcache.txt', json_encode($fileData));
 				echo "Key Already Exist";
-			}else if(!empty($fileData) && count($fileData) > 99){
-				array_multisort(array_column($fileData, 'accessTime'), SORT_DESC, $fileData);
-				$fileData = array_slice($fileData, 0, 98);
+			}else{
+				if(!empty($fileData) && count($fileData) > $this->configs['fileSize']){
+					array_multisort(array_column($fileData, 'accessTime'), SORT_DESC, $fileData);
+					$fileData = array_slice($fileData, 0, $this->configs['fileSize']-1);
+				}
 				$payload = array('key' => $key, 'value' => $value, 'accessTime' => time());
 				$fileData[] = $payload;
-				file_put_contents('cgcache.txt', json_encode($fileData));
 			}
+			file_put_contents($this->configs['cacheFileName'], json_encode($fileData));
 		}
 
 		function getData($key, $value = 'Not Found'){
-			$fileData = json_decode(file_get_contents("cgcache.txt"), true);
+			$fileData = json_decode(file_get_contents($this->configs['cacheFileName']), true);
 			$keyP = array_search($key, array_column($fileData, 'key'));
 			if(!empty($keyP) || $keyP === 0){
 				$fileData[$keyP]['accessTime'] = time();
-				file_put_contents('cgcache.txt', json_encode($fileData));
+				file_put_contents($this->configs['cacheFileName'], json_encode($fileData));
 				print_r($fileData[$keyP]);
 			}else{
-				echo 'Key Not Found';			
+				echo 'Key Not Found';
 			}
 		}
 
 		function deleteData($key){
-			$fileData = json_decode(file_get_contents("cgcache.txt"), true);
+			$fileData = json_decode(file_get_contents($this->configs['cacheFileName']), true);
 			$keyP = array_search($key, array_column($fileData, 'key'));
 			if(!empty($keyP) || $keyP === 0){
 				unset($fileData[$keyP]);
-				file_put_contents('cgcache.txt', json_encode($fileData));
+				file_put_contents($this->configs['cacheFileName'], json_encode($fileData));
 				echo "Key ".$key." Deleted Successfully";
 			}else{
 				echo "Key Not Found";
@@ -92,7 +99,7 @@
 		function exportCache(){
 			$filename = time().'-cache.txt';
 			fopen($filename, "w");
-			$fileData = file_get_contents("cgcache.txt");
+			$fileData = file_get_contents($this->configs['cacheFileName']);
 			file_put_contents($filename, $fileData);
 			echo "Data exported Successfully";
 		}
